@@ -34,7 +34,11 @@ class AuthService:
             user, expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
 
-        refresh_token = security.create_refresh_token({"access": access_token, "created_at": user.created_at})
+        refresh_token = security.create_refresh_token(user)
+
+        existing_token = await crud.token.get_by_email(db, email=user.email)
+        if existing_token:
+            return await self._update_tokens(db, existing_token, user)
 
         token_data: Token = await crud.token.create(
             db,
@@ -48,7 +52,7 @@ class AuthService:
             user, expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
 
-        refresh_token = security.create_refresh_token({"access": access_token, "created_at": user.created_at})
+        refresh_token = security.create_refresh_token(user)
 
         token_data: Token = await crud.token.update(
             db,

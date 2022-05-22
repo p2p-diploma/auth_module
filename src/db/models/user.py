@@ -30,7 +30,6 @@ class User(Base):
     is_banned: Mapped[bool] = Column(Boolean(), default=False)
     is_superuser: Mapped[bool] = Column(Boolean(), default=False)
     created_at: Mapped[datetime.datetime] = Column(DateTime, default=datetime.datetime.now(), nullable=False)
-    last_login: Mapped[datetime.datetime] = Column(DateTime, nullable=False)
 
     token: Mapped["Token"] = relationship("Token", back_populates="user", uselist=False)
 

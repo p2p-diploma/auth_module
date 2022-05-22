@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("/login", response_model=schemas.Token)
 async def login(
     response: Response,
-    db: AsyncSession = Depends(dependencies.async_session),
+    db: AsyncSession = Depends(dependencies.get_session),
     form_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthService = Depends(),
 ) -> Any:
@@ -24,7 +24,7 @@ async def login(
     token_data = await auth_service.login_and_create_tokens(db, form_data)
 
     response.set_cookie(key="jwt-access", value=token_data.access_token)
-    response.set_cookie(key="jwt-refresh", value=token_data.access_token)
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token)
 
     return {
         "access_token": token_data.access_token,
@@ -36,7 +36,7 @@ async def login(
 async def refresh(
     request: Request,
     response: Response,
-    db: AsyncSession = Depends(dependencies.async_session),
+    db: AsyncSession = Depends(dependencies.get_session),
     auth_service: AuthService = Depends(),
 ) -> Any:
     """
@@ -45,7 +45,7 @@ async def refresh(
     token_data = await auth_service.refresh_tokens(db, request)
 
     response.set_cookie(key="jwt-access", value=token_data.access_token)
-    response.set_cookie(key="jwt-refresh", value=token_data.access_token)
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token)
 
     return {
         "access_token": token_data.access_token,
@@ -57,7 +57,7 @@ async def refresh(
 async def revoke(
     request: Request,
     response: Response,
-    db: AsyncSession = Depends(dependencies.async_session),
+    db: AsyncSession = Depends(dependencies.get_session),
     auth_service: AuthService = Depends(),
 ) -> str:
     """

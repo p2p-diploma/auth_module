@@ -5,9 +5,9 @@ Revises:
 Create Date: 2022-05-22 23:18:33.959841
 
 """
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "06885b6d9b8c"
@@ -31,13 +31,10 @@ def upgrade():
         sa.Column("is_banned", sa.Boolean(), nullable=True),
         sa.Column("is_superuser", sa.Boolean(), nullable=True),
         sa.Column("created_at", sa.DateTime(), nullable=False),
-        sa.Column("last_login", sa.DateTime(), nullable=False),
         sa.PrimaryKeyConstraint("email"),
     )
     op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
-    op.create_index(
-        op.f("ix_user_full_name"), "user", ["full_name"], unique=False
-    )
+    op.create_index(op.f("ix_user_full_name"), "user", ["full_name"], unique=False)
     op.create_table(
         "token",
         sa.Column("email", sa.String(), nullable=False),
@@ -49,9 +46,7 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("email"),
     )
-    op.create_index(
-        op.f("ix_token_access_token"), "token", ["access_token"], unique=False
-    )
+    op.create_index(op.f("ix_token_access_token"), "token", ["access_token"], unique=False)
     op.create_index(
         op.f("ix_token_refresh_token"),
         "token",
