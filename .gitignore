@@ -1,0 +1,21 @@
+.idea
+.pytest_cache
+.mypy_cache
+__pycache__
+.hypothesis
+
+
+.env
+*.env
+!.example.env
+!.example.*.env
+
+
+.vscode
+.coverage
+coverage.xml
+
+
+# vim temporary files
+*~
+.*.sw?
