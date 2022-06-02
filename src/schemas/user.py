@@ -44,5 +44,13 @@ class User(UserInDBBase):
     pass
 
 
+class UserProfile(BaseModel):
+    email: EmailStr
+    full_name: str
+
+    class Config:
+        orm_mode = True
+
+
 class UserInDB(UserInDBBase):
     hashed_password: str

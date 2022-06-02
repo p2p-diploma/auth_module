@@ -14,7 +14,7 @@ from exceptions import APIException, SomethingWentWrongException
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Trade Service")
+    app = FastAPI(title="Auth Service")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
