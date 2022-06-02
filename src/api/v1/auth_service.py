@@ -107,14 +107,14 @@ class AuthService:
         refresh_token: str = str(request.cookies.get("jwt-refresh"))
 
         if not access_token and not refresh_token:
-            raise InvalidRefreshToken()
+            return "Logout Successfully"
 
         token_data = await crud.token.get_by_access_token(db, access_token=access_token)
 
         if not token_data:
-            raise NotFoundException()
+            return "Logout Successfully"
 
         if token_data.refresh_token != refresh_token:
-            raise InvalidRefreshToken()
+            return "Logout Successfully"
 
         return await self._delete_tokens(db, token_data)
