@@ -23,8 +23,8 @@ async def login(
     """
     token_data = await auth_service.login_and_create_tokens(db, form_data)
 
-    response.set_cookie(key="jwt-access", value=token_data.access_token)
-    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token)
+    response.set_cookie(key="jwt-access", value=token_data.access_token, httponly=True, secure=True, samesite='none')
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, httponly=True, secure=True, samesite='none')
 
     return {
         "access_token": token_data.access_token,
@@ -44,8 +44,8 @@ async def refresh(
     """
     token_data = await auth_service.refresh_tokens(db, request)
 
-    response.set_cookie(key="jwt-access", value=token_data.access_token)
-    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token)
+    response.set_cookie(key="jwt-access", value=token_data.access_token, httponly=True, secure=True, samesite='none')
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, httponly=True, secure=True, samesite='none')
 
     return {
         "access_token": token_data.access_token,
