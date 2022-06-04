@@ -23,8 +23,8 @@ async def login(
     """
     token_data = await auth_service.login_and_create_tokens(db, form_data)
 
-    response.set_cookie(key="jwt-access", value=token_data.access_token, httponly=True, secure=True, samesite='none')
-    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, httponly=True, secure=True, samesite='none')
+    response.set_cookie(key="jwt-access", value=token_data.access_token, secure=True, samesite='none')
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, secure=True, samesite='none')
 
     return {
         "access_token": token_data.access_token,
@@ -44,8 +44,8 @@ async def refresh(
     """
     token_data = await auth_service.refresh_tokens(db, request)
 
-    response.set_cookie(key="jwt-access", value=token_data.access_token, httponly=True, secure=True, samesite='none')
-    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, httponly=True, secure=True, samesite='none')
+    response.set_cookie(key="jwt-access", value=token_data.access_token, secure=True, samesite='none')
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, secure=True, samesite='none')
 
     return {
         "access_token": token_data.access_token,
@@ -65,7 +65,7 @@ async def revoke(
     """
     message: str = await auth_service.revoke_tokens(db, request)
 
-    response.delete_cookie(key="jwt-access")
-    response.delete_cookie(key="jwt-refresh")
+    response.delete_cookie(key="jwt-access", secure=True, samesite="none")
+    response.delete_cookie(key="jwt-refresh", secure=True, samesite="none")
 
     return message
