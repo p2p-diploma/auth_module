@@ -31,7 +31,8 @@ class AuthService:
 
     async def _create_tokens(self, db: AsyncSession, user: User) -> Token:
         access_token = security.create_access_token(
-            user, expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            user,
+            expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         )
 
         refresh_token = security.create_refresh_token(user)
@@ -49,7 +50,8 @@ class AuthService:
 
     async def _update_tokens(self, db: AsyncSession, token: Token, user: User) -> Token:
         access_token = security.create_access_token(
-            user, expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            user,
+            expires_delta=timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         )
 
         refresh_token = security.create_refresh_token(user)
@@ -67,6 +69,11 @@ class AuthService:
     ) -> Token:
         user = await self._login(db, form_data)
 
+        token_data: Token = await self._create_tokens(db, user)
+
+        return token_data
+
+    async def login_after_register(self, db: AsyncSession, user):
         token_data: Token = await self._create_tokens(db, user)
 
         return token_data
