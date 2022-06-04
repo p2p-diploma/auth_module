@@ -32,7 +32,11 @@ def create_refresh_token(user: User, expires_delta: Optional[timedelta] = None) 
     else:
         expire = datetime.utcnow() + timedelta(days=app_settings.REFRESH_TOKEN_EXPIRE_DAYS)
 
-    access_body = {"email": user.email, "created_at": user.created_at.strftime("MM:SS"), "exp": expire}
+    access_body = {
+        "email": user.email,
+        "created_at": user.created_at.strftime("MM:SS"),
+        "exp": expire,
+    }
     encoded_jwt = jwt.encode(access_body, app_settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
