@@ -20,8 +20,11 @@ class AppSettings(BaseSettings):
     POSTGRES_DB: str
     SQLALCHEMY_DATABASE_URI_ASYNC: Optional[AsyncPostgresDsn] = None
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
-    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 3600
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 7200
+
+    SUPERUSER_EMAIL: str
+    SUPERUSER_PASS: str
 
     @validator("POSTGRES_DB", pre=True)
     def assemble_db_name(cls, v: Optional[str], values: Dict[str, Any]) -> Any:

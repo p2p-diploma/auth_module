@@ -73,6 +73,11 @@ class AuthService:
 
         return token_data
 
+    async def login_after_register(self, db: AsyncSession, user):
+        token_data: Token = await self._create_tokens(db, user)
+
+        return token_data
+
     async def refresh_tokens(self, db: AsyncSession, request: Request) -> Token:
         access_token: str = str(request.cookies.get("jwt-access"))
         refresh_token: str = str(request.cookies.get("jwt-refresh"))

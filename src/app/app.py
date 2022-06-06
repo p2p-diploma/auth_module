@@ -7,10 +7,14 @@ from fastapi.responses import ORJSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.cors import CORSMiddleware
 
+import crud
 from api.v1.api import api_router
 from core.config import app_settings
 from core.dependencies import get_session
+from db.models.user import UserRole
+from db.session import async_session
 from exceptions import APIException, SomethingWentWrongException
+from schemas.user import UserForceCreate
 
 
 def create_app() -> FastAPI:
@@ -52,6 +56,24 @@ def create_app() -> FastAPI:
                 detail=exception.default_detail,
             ).dict(),
             status_code=exception.default_status_code,
+        )
+
+    @app.on_event("startup")
+    async def startup():
+        async with async_session() as db:
+            user = await crud.user.get_admin(db)
+
+        if user:
+            return
+
+        _ = await crud.user.create_user(
+            db,
+            obj_in=UserForceCreate(
+                role=UserRole.SUPERUSER,
+                email=app_settings.SUPERUSER_EMAIL,
+                password=app_settings.SUPERUSER_PASS,
+                full_name=app_settings.SUPERUSER_EMAIL,
+            ),
         )
 
     app.include_router(api_router, prefix=app_settings.API_V1_STR)

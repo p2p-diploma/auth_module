@@ -5,7 +5,7 @@ from sqlalchemy.future import select
 
 from core.security import get_password_hash, verify_password
 from crud.base import CRUDBase
-from db.models.user import User
+from db.models.user import User, UserRole
 from schemas.user import UserCreate, UserForceCreate, UserUpdate
 
 
@@ -14,11 +14,22 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
         result = await db.execute(select(User).filter(User.email == email))
         return result.scalars().first()
 
+    async def get_admin(self, db: AsyncSession) -> Optional[User]:
+        result = await db.execute(select(User).filter(User.role == UserRole.SUPERUSER))
+        return result.scalars().first()
+
     async def create_user(self, db: AsyncSession, *, obj_in: Union[UserCreate, UserForceCreate]) -> User:
+        is_superuser: bool = False
+        role: UserRole = obj_in.role or UserRole.USER
+        if obj_in.role == UserRole.SUPERUSER:
+            is_superuser = True
+
         db_obj = User(
+            role=role,
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             full_name=obj_in.full_name,
+            is_superuser=is_superuser,
         )
         db.add(db_obj)
         await db.commit()

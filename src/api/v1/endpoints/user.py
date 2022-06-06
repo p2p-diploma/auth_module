@@ -1,9 +1,10 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import crud
+from api.v1.auth_service import AuthService
 from core import dependencies
 from exceptions import NoPermissionToDo, NotFoundException, SameEmailError
 from schemas import User, UserCreate
@@ -15,7 +16,9 @@ router = APIRouter()
 @router.post("/", response_model=User)
 async def create_user(
     *,
+    response: Response,
     db: AsyncSession = Depends(dependencies.get_session),
+    auth_service: AuthService = Depends(),
     user_in: UserCreate,
 ) -> Any:
     """
@@ -26,6 +29,11 @@ async def create_user(
         raise SameEmailError()
 
     user = await crud.user.create_user(db, obj_in=user_in)
+
+    token_data = await auth_service.login_after_register(db, user)
+
+    response.set_cookie(key="jwt-access", value=token_data.access_token, samesite="strict")
+    response.set_cookie(key="jwt-refresh", value=token_data.refresh_token, samesite="strict")
 
     return user
 
