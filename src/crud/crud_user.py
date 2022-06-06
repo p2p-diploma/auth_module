@@ -20,9 +20,12 @@ class CRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
 
     async def create_user(self, db: AsyncSession, *, obj_in: Union[UserCreate, UserForceCreate]) -> User:
         is_superuser: bool = False
-        role: UserRole = obj_in.role or UserRole.USER
-        if obj_in.role == UserRole.SUPERUSER:
-            is_superuser = True
+        try:
+            role: UserRole = obj_in.role
+            if obj_in.role == UserRole.SUPERUSER:
+                is_superuser = True
+        except AttributeError:
+            role = UserRole.USER
 
         db_obj = User(
             role=role,
